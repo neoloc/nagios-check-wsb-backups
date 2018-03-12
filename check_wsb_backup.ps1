@@ -23,6 +23,10 @@
 #
 # Originally created by Ben Vincent (ben.vincent@oneitservices.com.au)
 #
+# Resources
+#   Countless windows servers with backups. scouring eventlogs for what I need.
+#   May be missing many event id's so add them if/when you find them.
+#
 # eventlog_id's
 #  success
 #   4 - The backup operation has finished successfully.
@@ -75,13 +79,6 @@ else
   $SuccessEvents = Get-WinEvent -LogName Microsoft-Windows-Backup -MaxEvents 2000 | Where-Object{($_.ID -eq "4") -and ($_.ProviderName -eq "Microsoft-Windows-Backup")}
 }
 
-
-#  errors
-#   5 - The backup operation that started at 'datetime' has failed with following error code '2147942455'. Please review the event details for a solution, and then rerun the backup operation once the issue is resolved.
-#   9 - The backup operation that started at 'datetime' has failed because the Volume Shadow Copy Service operation to create a shadow copy of the volumes being backed up failed.
-#   19 - The backup operation attempted at 'datetime' has failed to start, error code '2155348061'. Please review the event details for a solution, and then rerun the backup operation once the issue is resolved.
-#   49 - The backup operation has failed because no backup storage location could be found. Please confirm that the backup storage location is attached and online, and then rerun the backup operation.
-#
 # check for critical alerts (failed within last $NagiosCrit_Hours hours)
 Foreach ($event in $FailEvents_General)
 {
@@ -151,11 +148,6 @@ Foreach ($event in $FailEvents_General)
   }
 }
 
-#  warnings
-#   7 - The backup operation that started at 'datetime' has completed with errors. Please review the event details for a solution, and then rerun the backup operation once the issue is resolved.
-#   51 - The backup storage location is running low on free space. Future backup operations that store backups on this location may fail because of not enough space.
-#   146 - A volume included for backup is missing. This could be because the volume is dismounted, reformatted or disk is detached.
-#
 # check for warnings alerts (warnings within last $NagiosCrit_Hours hours)
 Foreach ($event in $WarnEvents_General)
 {
@@ -208,12 +200,6 @@ Foreach ($event in $WarnEvents_General)
   }
 }
 
-#  errors
-#   5 - The backup operation that started at 'datetime' has failed with following error code '2147942455'. Please review the event details for a solution, and then rerun the backup operation once the issue is resolved.
-#   9 - The backup operation that started at 'datetime' has failed because the Volume Shadow Copy Service operation to create a shadow copy of the volumes being backed up failed.
-#   19 - The backup operation attempted at 'datetime' has failed to start, error code '2155348061'. Please review the event details for a solution, and then rerun the backup operation once the issue is resolved.
-#   49 - The backup operation has failed because no backup storage location could be found. Please confirm that the backup storage location is attached and online, and then rerun the backup operation.
-#
 # check for warnings alerts (failures within last $NagiosWarn_Hours hours)
 Foreach ($event in $FailEvents_General)
 {
@@ -283,9 +269,7 @@ Foreach ($event in $FailEvents_General)
   }
 }
 
-#  success
-#   4 - The backup operation has finished successfully.
-#
+
 # check for successful backups within the last $NagiosCrit_Hours hours, report OK
 Foreach ($event in $SuccessEvents)
 {
