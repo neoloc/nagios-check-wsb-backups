@@ -276,7 +276,7 @@ Foreach ($event in $SuccessEvents)
   If ($((get-date).AddHours(-$NagiosCrit_Hours)) -lt $event.TimeCreated)
   {
     # Set the nagios alert description
-    $NagiosDescription = "Backup success in last " + $NagiosWarn_Hours + " hours."
+    $NagiosDescription = "Backup success in last " + $NagiosCrit_Hours + " hours."
 
     # Set the status to successful.
     $NagiosStatus = "0"
