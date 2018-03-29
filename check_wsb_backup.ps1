@@ -85,10 +85,30 @@ Foreach ($event in $FailEvents_General)
   If ($((get-date).AddHours(-$NagiosCrit_Hours)) -lt $event.TimeCreated)
   {
 
-    # check for more specific failure events (VSS Failure)
-    Foreach ($event in $FailEvents_VSSFailure)
+    # check for successes that occured after the error (manually run backup?)
+    Foreach ($subevent in $SuccessEvents)
     {
-      If ($((get-date).AddHours(-$NagiosCrit_Hours)) -lt $event.TimeCreated)
+      If ($((get-date).AddHours(-$NagiosCrit_Hours)) -lt $subevent.TimeCreated)
+      {
+        If ($event.TimeCreated -lt $subevent.TimeCreated)
+        {
+            # Set the nagios alert description
+            $NagiosDescription = "Backup success and failure in last " + $NagiosCrit_Hours + " hours."
+
+            # Set the status to warning.
+            $NagiosStatus = "1"
+
+            # Output the nagios error text and then exit
+            Write-Host "WARNING: " $NagiosDescription
+            exit $NagiosStatus
+        }
+      }
+    }
+
+    # check for more specific failure events (VSS Failure)
+    Foreach ($subevent in $FailEvents_VSSFailure)
+    {
+      If ($((get-date).AddHours(-$NagiosCrit_Hours)) -lt $subevent.TimeCreated)
       {
         # Set the nagios alert description
         $NagiosDescription = "Backup failed in last " + $NagiosCrit_Hours + " hours. WSB failed to take a VSS snapshot."
@@ -103,9 +123,9 @@ Foreach ($event in $FailEvents_General)
     }
 
     # check for more specific failure events (Backup did not start)
-    Foreach ($event in $FailEvents_DidNotStart)
+    Foreach ($subevent in $FailEvents_DidNotStart)
     {
-      If ($((get-date).AddHours(-$NagiosCrit_Hours)) -lt $event.TimeCreated)
+      If ($((get-date).AddHours(-$NagiosCrit_Hours)) -lt $subevent.TimeCreated)
       {
         # Set the nagios alert description
         $NagiosDescription = "Backup failed in last " + $NagiosCrit_Hours + " hours. WSB failed to start backup job."
@@ -120,9 +140,9 @@ Foreach ($event in $FailEvents_General)
     }
 
     # check for more specific failure events (No backup destination found)
-    Foreach ($event in $FailEvents_NoBackupDest)
+    Foreach ($subevent in $FailEvents_NoBackupDest)
     {
-      If ($((get-date).AddHours(-$NagiosCrit_Hours)) -lt $event.TimeCreated)
+      If ($((get-date).AddHours(-$NagiosCrit_Hours)) -lt $subevent.TimeCreated)
       {
         # Set the nagios alert description
         $NagiosDescription = "Backup failed in last " + $NagiosCrit_Hours + " hours. WSB failed to find backup destination device."
@@ -154,10 +174,30 @@ Foreach ($event in $WarnEvents_General)
   If ($((get-date).AddHours(-$NagiosCrit_Hours)) -lt $event.TimeCreated)
   {
 
-    # check for more specific warning events (Low space on destination drive)
-    Foreach ($event in $WarnEvents_LowSpace)
+    # check for successes that occured after the warning (manually run backup?)
+    Foreach ($subevent in $SuccessEvents)
     {
-      If ($((get-date).AddHours(-$NagiosCrit_Hours)) -lt $event.TimeCreated)
+      If ($((get-date).AddHours(-$NagiosCrit_Hours)) -lt $subevent.TimeCreated)
+      {
+        If ($event.TimeCreated -lt $subevent.TimeCreated)
+        {
+            # Set the nagios alert description
+            $NagiosDescription = "Backup success and warning in last " + $NagiosCrit_Hours + " hours."
+
+            # Set the status to warning.
+            $NagiosStatus = "1"
+
+            # Output the nagios error text and then exit
+            Write-Host "WARNING: " $NagiosDescription
+            exit $NagiosStatus
+        }
+      }
+    }
+
+    # check for more specific warning events (Low space on destination drive)
+    Foreach ($subevent in $WarnEvents_LowSpace)
+    {
+      If ($((get-date).AddHours(-$NagiosCrit_Hours)) -lt $subevent.TimeCreated)
       {
         # Set the nagios alert description
         $NagiosDescription = "Backup warning in last " + $NagiosCrit_Hours + " hours. WSB reports low space on destination device."
@@ -172,9 +212,9 @@ Foreach ($event in $WarnEvents_General)
     }
 
     # check for more specific failure events (Missing source volume)
-    Foreach ($event in $WarnEvents_MissingVol)
+    Foreach ($subevent in $WarnEvents_MissingVol)
     {
-      If ($((get-date).AddHours(-$NagiosCrit_Hours)) -lt $event.TimeCreated)
+      If ($((get-date).AddHours(-$NagiosCrit_Hours)) -lt $subevent.TimeCreated)
       {
         # Set the nagios alert description
         $NagiosDescription = "Backup warning in last " + $NagiosCrit_Hours + " hours. WSB reports missing source volume."
@@ -206,10 +246,30 @@ Foreach ($event in $FailEvents_General)
   If ($((get-date).AddHours(-$NagiosWarn_Hours)) -lt $event.TimeCreated)
   {
 
-    # check for more specific failure events (VSS Failure)
-    Foreach ($event in $FailEvents_VSSFailure)
+    # check for successes that occured after the warning (manually run backup?)
+    Foreach ($subevent in $SuccessEvents)
     {
-      If ($((get-date).AddHours(-$NagiosWarn_Hours)) -lt $event.TimeCreated)
+      If ($((get-date).AddHours(-$NagiosCrit_Hours)) -lt $subevent.TimeCreated)
+      {
+        If ($event.TimeCreated -lt $subevent.TimeCreated)
+        {
+            # Set the nagios alert description
+            $NagiosDescription = "Backup success in last " + $NagiosCrit_Hours + " hours."
+
+            # Set the status to successful.
+            $NagiosStatus = "0"
+
+            # Output the nagios error text and then exit
+            Write-Host "OK: " $NagiosDescription
+            exit $NagiosStatus
+        }
+      }
+    }
+
+    # check for more specific failure events (VSS Failure)
+    Foreach ($subevent in $FailEvents_VSSFailure)
+    {
+      If ($((get-date).AddHours(-$NagiosWarn_Hours)) -lt $subevent.TimeCreated)
       {
         # Set the nagios alert description
         $NagiosDescription = "Backup failed in last " + $NagiosWarn_Hours + " hours. WSB failed to take a VSS snapshot."
@@ -224,9 +284,9 @@ Foreach ($event in $FailEvents_General)
     }
 
     # check for more specific failure events (Backup did not start)
-    Foreach ($event in $FailEvents_DidNotStart)
+    Foreach ($subevent in $FailEvents_DidNotStart)
     {
-      If ($((get-date).AddHours(-$NagiosWarn_Hours)) -lt $event.TimeCreated)
+      If ($((get-date).AddHours(-$NagiosWarn_Hours)) -lt $subevent.TimeCreated)
       {
         # Set the nagios alert description
         $NagiosDescription = "Backup failed in last " + $NagiosWarn_Hours + " hours. WSB failed to start backup job."
@@ -241,9 +301,9 @@ Foreach ($event in $FailEvents_General)
     }
 
     # check for more specific failure events (No backup destination found)
-    Foreach ($event in $FailEvents_NoBackupDest)
+    Foreach ($subevent in $FailEvents_NoBackupDest)
     {
-      If ($((get-date).AddHours(-$NagiosWarn_Hours)) -lt $event.TimeCreated)
+      If ($((get-date).AddHours(-$NagiosWarn_Hours)) -lt $subevent.TimeCreated)
       {
         # Set the nagios alert description
         $NagiosDescription = "Backup failed in last " + $NagiosWarn_Hours + " hours. WSB failed to find backup destination device."
@@ -288,7 +348,8 @@ Foreach ($event in $SuccessEvents)
   }
 }
 
-# check for successful backups within the last $NagiosWARN_Hours hours, report WARN
+# check for successful backups within the last $NagiosWARN_Hours hours, report WARN since a
+# success in the last $NagiosCRIT_Hours would have been caught earlier in this script
 Foreach ($event in $SuccessEvents)
 {
   If ($((get-date).AddHours(-$NagiosWarn_Hours)) -lt $event.TimeCreated)
