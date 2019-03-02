@@ -1,7 +1,5 @@
 # Installation
 
-## Client Side
-
 1) Download the script
 
 2) Edit the nsclient.ini file and add:
@@ -18,29 +16,3 @@
     %SystemRoot%\syswow64\WindowsPowerShell\v1.0\powershell.exe "Set-ExecutionPolicy RemoteSigned"
 
 4) Restart the nsclient++ service
-
-## Nagios Side
-
-1) Connect to the monitor1 host internally. Refer to TeamPass for credentials.
-
-2) Edit the '/etc/nagios3/clients/common-hostgroups.cfg' file.
-
-    nano /etc/nagios3/clients/common-hostgroups.cfg
-
-3) Search for 'parent-check-wsb-backups'
-
-    inside nano, press CTRL+W and then paste the 'parent-check-wsb-backups' search string
-
-4) Add the hosts/hostgroups that represent the servers you want to check to the 'parent-check-wsb-backups' hostgroup.
-
-5) Save and exit the file.
-
-    inside nano, CTRL+X to save and exit
-
-6) Check the configuration syntax is OK.
-
-    verifynagios
-
-7) Restart nagios
-
-    service nagios3 restart
